@@ -1,0 +1,606 @@
+body {
+    margin: 0;
+    height: 100px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    background-image: url('backgroundimage.jpeg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.header {
+    padding: 10px;
+    background: transparent;
+    border: 0px;
+}
+
+.topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+}
+
+.topbar h2 {
+    margin: 0;
+    font-size: 28px;
+    color: hotpink;
+}
+
+.topbar span {
+    color: white;
+    font-size: 16px;
+    margin-right: 15px;
+}
+
+.topbar button {
+    width: auto;
+    padding: 8px 18px;
+    font-size: 14px;
+    background: #e63973;
+    border-radius: 20px;
+}
+
+.no-profiles {
+    color: white;
+    text-align: center;
+    margin-top: 50px;
+    font-size: 20px;
+}
+
+.profil-card p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: white;
+}
+
+.profil-card h3 {
+    color: white;
+}
+
+.box {
+    background-color: transparent;
+    backdrop-filter: blur(5px);
+    width: 400px;
+    margin: 10px;
+    padding: 25px;
+    border-radius: 15px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+    margin-top: 0;
+}
+
+.for {
+    align-items: left;
+    margin-left: 50px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #e63973;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: deeppink;
+}
+
+.profil-card {
+    background: transparent;
+    backdrop-filter: blur(10px);
+    width: 260px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.7s ease;
+    margin: 10px;
+}
+
+.profil-card:hover {
+    transform: scale(1.05);
+    background-color: #e87ca0;
+    backdrop-filter: blur(10px);
+}
+
+.profil-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.profil-card h3 {
+    margin: 15px 0 10px;
+}
+
+.profil-container {
+    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.img-upload-label {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    background: rgba(230, 57, 115, 0.3);
+    border: 2px dashed hotpink;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: background 0.3s;
+}
+
+.img-upload-label:hover {
+    background: rgba(230, 57, 115, 0.5);
+}
+
+.switch {
+    margin-top: 10px;
+    color: hotpink;
+    cursor: pointer;
+    text-align: center;
+}
+
+.switch:hover {
+    text-decoration: underline;
+}
+
+form {
+    align-items: left;
+}
+
+.hearts {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.heart {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: red;
+    transform: rotate(45deg);
+    animation: float 8s linear infinite;
+}
+
+.heart::before,
+.heart::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: red;
+    border-radius: 50%;
+}
+
+.heart::before {
+    top: -10px;
+    left: 0;
+}
+
+.heart::after {
+    left: -10px;
+    top: 0;
+}
+
+h2 {
+    text-align: center;
+    font-size: 50px;
+}
+
+p {
+    text-align: center;
+    font-size: 20px;
+}
+
+.header h2,
+.header p {
+    margin-top: 0;
+}
+
+.btn-primary {
+    cursor: pointer;
+    background-color: rgba(255, 20, 145, 0.591);
+    border: 0;
+    color: red;
+    font-size: 30px;
+    padding: 20px;
+    width: 400px;
+    height: 100px;
+    border-radius: 300px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    margin-top: 50px;
+    transition: 0.66s;
+}
+
+.btn-primary:hover {
+    background-color: rgba(255, 20, 145, 0.591);
+    padding: 22px 22px 22px;
+    width: 405px;
+    height: 105px;
+    color: rgb(255, 0, 0);
+    font-size: 31px;
+    box-shadow: 5px 5px 50px #ff4d6d;
+    transform: translateY(2px);
+}
+
+.container {
+    height: 20vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+/* ── ADMIN PANEL STYLES ───────────────────────────────── */
+.admin-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: #fff;
+    border: 2px solid #8B0000;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-card h2 {
+    font-size: 40px;
+    color: #8B0000;
+    margin: 0;
+}
+
+.stat-card p {
+    margin: 5px 0 0;
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.controls input,
+.controls select {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #8B0000;
+    background: #fff;
+    color: #1a1a2e;
+    font-size: 14px;
+    flex: 1;
+    min-width: 150px;
+}
+
+.controls input::placeholder {
+    color: #666;
+}
+
+.controls select option {
+    background: #fff;
+    color: #1a1a2e;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 2px solid #8B0000;
+    background: #fff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+th {
+    background: #8B0000;
+    color: #fff;
+    padding: 14px 12px;
+    text-align: left;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #f0d0d0;
+    font-size: 14px;
+    vertical-align: middle;
+    color: #1a1a2e;
+}
+
+tr:hover td {
+    background: #fdf0f0;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #8B0000;
+}
+
+.btn-view {
+    background: rgba(0, 100, 200, 0.1);
+    border: 1px solid #0064c8;
+    color: #0064c8;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 5px;
+    width: auto;
+}
+
+.btn-delete {
+    background: rgba(139, 0, 0, 0.1);
+    border: 1px solid #8B0000;
+    color: #8B0000;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    width: auto;
+}
+
+.btn-view:hover {
+    background: rgba(0, 100, 200, 0.3);
+}
+
+.btn-delete:hover {
+    background: rgba(139, 0, 0, 0.3);
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    background: #fff;
+    border: 2px solid #8B0000;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal h2 {
+    color: #8B0000;
+    margin-top: 0;
+    text-align: center;
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #8B0000;
+    font-size: 24px;
+    cursor: pointer;
+    width: auto;
+    padding: 0;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0d0d0;
+    font-size: 14px;
+    color: #1a1a2e;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: #8B0000;
+    font-weight: bold;
+    min-width: 120px;
+}
+
+.modal img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #8B0000;
+    display: block;
+    margin: 0 auto 15px;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.badge-male {
+    background: rgba(0, 100, 255, 0.15);
+    color: #0050aa;
+}
+
+.badge-female {
+    background: rgba(139, 0, 0, 0.15);
+    color: #8B0000;
+}
+
+.badge-other {
+    background: rgba(100, 100, 100, 0.15);
+    color: #555;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #8B0000;
+    font-weight: bold;
+}
+
+.admin-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: #8B0000;
+}
+
+.admin-topbar h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 24px;
+    text-align: left;
+}
+
+.admin-topbar span {
+    color: #ffe0e0;
+    font-size: 14px;
+    margin-right: 15px;
+}
+
+.confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-overlay.active {
+    display: flex;
+}
+
+.confirm-box {
+    background: #fff;
+    border: 2px solid #8B0000;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    max-width: 350px;
+}
+
+.confirm-box h3 {
+    color: #8B0000;
+    margin-top: 0;
+}
+
+.confirm-box p {
+    color: #333;
+    font-size: 14px;
+}
+
+.confirm-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.confirm-btns button {
+    width: auto;
+    padding: 10px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-cancel {
+    background: #f5f5f5;
+    border: 1px solid #aaa;
+    color: #333;
+}
+
+.btn-confirm-del {
+    background: #8B0000;
+    border: none;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .profil-card { width: 45%; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .profil-card { width: 100%; }
+    .stats-grid { grid-template-columns: 1fr; }
+}

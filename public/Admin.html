@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+<head>
+    <title>SYNC SOUL - Admin Panel</title>
+    <link rel="stylesheet" href="backcss.css">
+</head>
+<body>
+
+<div class="admin-topbar">
+    <h2> SYNC SOUL — Admin Panel</h2>
+    <div>
+        <span id="adminWelcome"></span>
+        <button onclick="logout()" style="width:auto;padding:8px 18px;border-radius:20px;background:#e63973;">Logout</button>
+    </div>
+</div>
+
+<div class="admin-wrapper">
+    <div class="stats-grid">
+        <div class="stat-card"><h2 id="totalUsers">-</h2><p>Total Users</p></div>
+        <div class="stat-card"><h2 id="totalMale">-</h2><p>Male</p></div>
+        <div class="stat-card"><h2 id="totalFemale">-</h2><p>Female</p></div>
+        <div class="stat-card"><h2 id="totalOther">-</h2><p>Other / N/A</p></div>
+    </div>
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="🔍 Search by name, username, email..." oninput="filterUsers()">
+        <select id="genderFilter" onchange="filterUsers()">
+            <option value="">All Genders</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+        <select id="sortBy" onchange="filterUsers()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="name">Name A-Z</option>
+        </select>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Salary</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <tr><td colspan="10" class="loading">Loading users...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<div class="modal-overlay" id="viewModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <img id="modalPhoto" src="https://via.placeholder.com/100?text=No+Photo">
+        <h2 id="modalName" style="text-align:center;"></h2>
+        <div id="modalDetails"></div>
+    </div>
+</div>
+<div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+        <h3>⚠️ Delete User?</h3>
+        <p id="confirmMsg" style="color:#ccc;"></p>
+        <div class="confirm-btns">
+            <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+            <button class="btn-confirm-del" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script src="backjs.js"></script>
+<script>
+    var ADMIN_API = "http://localhost:3000/api";
+    var allUsers = [];
+    var deleteTargetId = null;
+
+    // Auth check - admin only
+    var currentUser = sessionStorage.getItem("loggedInUser");
+    var isAdmin = sessionStorage.getItem("isAdmin");
+    if (!currentUser || isAdmin !== "true") {
+        alert("Access denied! Admins only.");
+        window.location.href = "login.html";
+    }
+    document.getElementById("adminWelcome").textContent = "Admin: " + currentUser;
+
+    function calculateAge(dob) {
+        if (!dob) return "N/A";
+        return Math.floor((Date.now() - new Date(dob).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+    }
+
+    function sanitize(str) {
+        if (!str) return "";
+        return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+
+    function genderBadge(g) {
+        if (!g) return '<span class="badge badge-other">N/A</span>';
+        var gl = g.toLowerCase();
+        if (gl === "male") return '<span class="badge badge-male">Male</span>';
+        if (gl === "female") return '<span class="badge badge-female">Female</span>';
+        return '<span class="badge badge-other">' + sanitize(g) + '</span>';
+    }
+
+    function updateStats(users) {
+        document.getElementById("totalUsers").textContent = users.length;
+        document.getElementById("totalMale").textContent = users.filter(function(u){ return u.gender && u.gender.toLowerCase() === "male"; }).length;
+        document.getElementById("totalFemale").textContent = users.filter(function(u){ return u.gender && u.gender.toLowerCase() === "female"; }).length;
+        document.getElementById("totalOther").textContent = users.filter(function(u){ return !u.gender || (u.gender.toLowerCase() !== "male" && u.gender.toLowerCase() !== "female"); }).length;
+    }
+
+    function filterUsers() {
+        var search = document.getElementById("searchInput").value.toLowerCase();
+        var gender = document.getElementById("genderFilter").value.toLowerCase();
+        var sort   = document.getElementById("sortBy").value;
+
+        var filtered = allUsers.filter(function(u) {
+            var matchSearch = !search ||
+                (u.username && u.username.toLowerCase().includes(search)) ||
+                (u.email && u.email.toLowerCase().includes(search)) ||
+                (u.fname && u.fname.toLowerCase().includes(search)) ||
+                (u.mname && u.mname.toLowerCase().includes(search));
+            var matchGender = !gender || (u.gender && u.gender.toLowerCase() === gender);
+            return matchSearch && matchGender;
+        });
+
+        if (sort === "newest") filtered.sort(function(a,b){ return new Date(b.createdAt) - new Date(a.createdAt); });
+        if (sort === "oldest") filtered.sort(function(a,b){ return new Date(a.createdAt) - new Date(b.createdAt); });
+        if (sort === "name")   filtered.sort(function(a,b){ return a.username.localeCompare(b.username); });
+
+        renderTable(filtered);
+    }
+
+    function renderTable(users) {
+        var tbody = document.getElementById("userTableBody");
+        if (users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="no-data">No users found.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = users.map(function(u) {
+            var age = calculateAge(u.dob);
+            var joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "N/A";
+            return '<tr>' +
+                '<td><img class="avatar" id="av-' + u._id + '" src="https://via.placeholder.com/40?text=..." onerror="this.src=\'https://via.placeholder.com/40?text=No\'"></td>' +
+                '<td>' + sanitize(u.username) + '</td>' +
+                '<td>' + sanitize((u.fname || "") + " " + (u.mname || "")) + '</td>' +
+                '<td>' + sanitize(u.email) + '</td>' +
+                '<td>' + sanitize(u.phone) + '</td>' +
+                '<td>' + genderBadge(u.gender) + '</td>' +
+                '<td>' + age + '</td>' +
+                '<td>' + (u.salary ? "&#8377;" + sanitize(u.salary) : "N/A") + '</td>' +
+                '<td>' + joined + '</td>' +
+                '<td>' +
+                    '<button class="btn-view" onclick="viewUser(\'' + u._id + '\')">👁 View</button>' +
+                    '<button class="btn-delete" onclick="askDelete(\'' + u._id + '\',\'' + sanitize(u.username) + '\')">🗑 Delete</button>' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+
+        // Load avatars lazily
+        users.forEach(function(u, i) {
+            setTimeout(function() {
+                fetch(ADMIN_API + "/photo/" + u._id)
+                    .then(function(r){ return r.json(); })
+                    .then(function(d){
+                        var av = document.getElementById("av-" + u._id);
+                        if (av && d.photo && d.photo.startsWith("data:image")) av.src = d.photo;
+                        else if (av) av.src = "https://via.placeholder.com/40?text=No";
+                    }).catch(function(){});
+            }, i * 200);
+        });
+    }
+
+    function viewUser(id) {
+        var u = allUsers.find(function(x){ return x._id === id; });
+        if (!u) return;
+        document.getElementById("modalName").textContent = (u.fname || "") + " " + (u.username || "");
+        document.getElementById("modalPhoto").src = "https://via.placeholder.com/100?text=Loading";
+        fetch(ADMIN_API + "/photo/" + id)
+            .then(function(r){ return r.json(); })
+            .then(function(d){
+                document.getElementById("modalPhoto").src = (d.photo && d.photo.startsWith("data:image")) ? d.photo : "https://via.placeholder.com/100?text=No+Photo";
+            }).catch(function(){});
+
+        var details = [
+            ["Username", u.username], ["Email", u.email], ["Phone", u.phone],
+            ["Gender", u.gender || "N/A"], ["Age", calculateAge(u.dob)], ["DOB", u.dob || "N/A"],
+            ["Father's Name", u.fname || "N/A"], ["Mother's Name", u.mname || "N/A"],
+            ["Caste", u.cast || "N/A"], ["Salary", u.salary ? "₹" + u.salary : "N/A"],
+            ["Bio", u.bio || "N/A"], ["Joined", u.createdAt ? new Date(u.createdAt).toLocaleString() : "N/A"]
+        ];
+        document.getElementById("modalDetails").innerHTML = details.map(function(d){
+            return '<div class="detail-row"><span class="detail-label">' + d[0] + '</span><span>' + sanitize(String(d[1])) + '</span></div>';
+        }).join('');
+        document.getElementById("viewModal").classList.add("active");
+    }
+
+    function closeModal() { document.getElementById("viewModal").classList.remove("active"); }
+
+    function askDelete(id, username) {
+        deleteTargetId = id;
+        document.getElementById("confirmMsg").textContent = 'Are you sure you want to delete "' + username + '"? This cannot be undone.';
+        document.getElementById("confirmOverlay").classList.add("active");
+    }
+
+    function closeConfirm() { document.getElementById("confirmOverlay").classList.remove("active"); deleteTargetId = null; }
+
+    function confirmDelete() {
+        if (!deleteTargetId) return;
+        fetch(ADMIN_API + "/admin/delete/" + deleteTargetId, { method: "DELETE", headers: { "x-admin-user": currentUser } })
+            .then(function(r){ return r.json(); })
+            .then(function(d){
+                if (d.error) { alert(d.error); return; }
+                allUsers = allUsers.filter(function(u){ return u._id !== deleteTargetId; });
+                updateStats(allUsers);
+                filterUsers();
+                closeConfirm();
+                alert("User deleted successfully!");
+            }).catch(function(){ alert("Error deleting user."); });
+    }
+    fetch(ADMIN_API + "/admin/users", { headers: { "x-admin-user": currentUser } })
+        .then(function(r){ return r.json(); })
+        .then(function(users){
+            allUsers = users;
+            updateStats(users);
+            filterUsers();
+        })
+        .catch(function(){
+            document.getElementById("userTableBody").innerHTML = '<tr><td colspan="10" class="no-data">Could not load users. Is the server running?</td></tr>';
+        });
+</script>
+</body>
+</html>

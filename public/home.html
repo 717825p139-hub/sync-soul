@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+    <title>SYNC SOUL - Home</title>
+    <link rel="stylesheet" href="backcss.css">
+</head>
+<body>
+    <script>
+        var currentUser = sessionStorage.getItem("loggedInUser");
+        if (!currentUser) window.location.href = "login.html";
+    </script>
+
+    <div class="topbar">
+        <h2>💕 SYNC SOUL</h2>
+        <div>
+            <span id="welcomeMsg"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="profil-container" id="profileContainer">
+        <p style="color:white;">Loading profiles...</p>
+    </div>
+
+    <script src="backjs.js"></script>
+    <script>
+        var API2 = "http://localhost:3000/api";
+        document.getElementById("welcomeMsg").textContent = "Welcome, " + currentUser + "!";
+
+        function sanitize(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+
+        function calculateAge(dob) {
+            if (!dob) return "N/A";
+            return Math.floor((Date.now() - new Date(dob).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+        }
+
+        function loadPhoto(userId) {
+            fetch(API + "/photo/" + userId)
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    var img = document.getElementById("img-" + userId);
+                    if (img && d.photo && d.photo.startsWith("data:image")) {
+                        img.src = d.photo;
+                    }
+                })
+                .catch(function() {});
+        }
+
+        fetch(API + "/profiles")
+            .then(function(res) { return res.json(); })
+            .then(function(profiles) {
+                var container = document.getElementById("profileContainer");
+                if (!profiles || profiles.length === 0) {
+                    container.innerHTML = '<p class="no-profiles">No profiles yet. Be the first!</p>';
+                    return;
+                }
+                // Render all cards instantly without photos
+                container.innerHTML = profiles.map(function(user) {
+                    var age = calculateAge(user.dob);
+                    var displayName = sanitize((user.fname ? user.fname + " " : "") + user.username);
+                    return '<div class="profil-card">' +
+                        '<img id="img-' + user._id + '" src="https://via.placeholder.com/260x200?text=Loading..." style="width:100%;height:200px;object-fit:cover;border-radius:8px;">' +
+                        '<h3>' + displayName + '</h3>' +
+                        '<p>🎂 Age: ' + age + '</p>' +
+                        '<p>⚧ Gender: ' + sanitize(user.gender || "N/A") + '</p>' +
+                        '<p>💰 Salary: ' + (user.salary ? "&#8377;" + sanitize(user.salary) : "N/A") + '</p>' +
+                        '<p>📖 ' + sanitize(user.bio || "No bio provided") + '</p>' +
+                        '<button onclick="window.location.href=\'mailto:' + sanitize(user.email) + '\'">Contact</button>' +
+                        '</div>';
+                }).join('');
+
+                // Load photos one by one in background with small delay between each
+                profiles.forEach(function(user, i) {
+                    setTimeout(function() { loadPhoto(user._id); }, i * 300);
+                });
+            })
+            .catch(function() {
+                document.getElementById("profileContainer").innerHTML =
+                    '<p class="no-profiles">Could not load profiles. Is the server running?</p>';
+            });
+    </script>
+</body>
+</html>
