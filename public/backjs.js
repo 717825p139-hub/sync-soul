@@ -1,4 +1,4 @@
-var API = "http://localhost:3000/api";
+var API = "/api";
 
 function hideAll() {
     ["loginBox", "registerBox", "forgotBox"].forEach(function (id) {
